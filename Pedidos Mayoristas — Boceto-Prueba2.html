@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pedidos Mayoristas — Boceto</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Bricolage+Grotesque:wght@400;600;800&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f5f9;--card:#fff;--tx:#14151a;--mu:#6b7080;--br:#e7e9f0;--ac:#4f46e5;--ac2:#7c3aed;--ph:#eef0f8;--ok:#059669;--wa:#d97706;--bl:#2563eb;--sh:0 1px 2px #0001,0 10px 30px #1a1d2d12;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e0f14;--card:#171923;--tx:#eef0f7;--mu:#9aa0b4;--br:#262938;--ph:#20232f;--ac:#818cf8;--ac2:#a78bfa;--sh:0 1px 2px #0006,0 10px 30px #0005}}
+:root[data-theme="dark"]{--bg:#0e0f14;--card:#171923;--tx:#eef0f7;--mu:#9aa0b4;--br:#262938;--ph:#20232f;--ac:#818cf8;--ac2:#a78bfa;--sh:0 1px 2px #0006,0 10px 30px #0005}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--tx);font:15px/1.45 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;padding-bottom:110px;-webkit-font-smoothing:antialiased}
+button,select,input{font:inherit;color:inherit}
+button{border:0;background:var(--ph);padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:600;transition:.15s}
+button:hover{filter:brightness(.97)}button:active{transform:scale(.97)}
+button.pri{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff}
+button:disabled{opacity:.4;cursor:not-allowed}
+input,select{border:1px solid var(--br);background:var(--card);padding:11px 13px;border-radius:12px;width:100%;outline:none}
+input:focus,select:focus{border-color:var(--ac);box-shadow:0 0 0 3px #4f46e522}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:14px 20px;position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:color-mix(in srgb,var(--bg) 80%,transparent);backdrop-filter:blur(14px);border-bottom:1px solid var(--br)}
+.logo{font-weight:800;font-size:18px;letter-spacing:-.02em}.logo span{background:linear-gradient(135deg,var(--ac),var(--ac2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.seg{display:inline-flex;background:var(--ph);padding:4px;border-radius:14px;gap:2px}
+.seg button{background:none;padding:8px 14px;border-radius:10px;color:var(--mu)}
+.seg button.on{background:var(--card);color:var(--tx);box-shadow:var(--sh)}
+main{max-width:1120px;margin:0 auto;padding:20px}
+.mu{color:var(--mu);font-size:13px}
+.search{position:relative;margin-bottom:12px}.search input{padding-left:40px;height:48px;box-shadow:var(--sh)}.search i{position:absolute;left:14px;top:12px;font-style:normal}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:14px}
+.chip{white-space:nowrap;background:var(--card);border:1px solid var(--br);border-radius:99px;padding:7px 15px;font-weight:500}
+.chip.on{background:var(--tx);color:var(--bg);border-color:var(--tx)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px}
+.card{background:var(--card);border-radius:20px;padding:12px;box-shadow:var(--sh);display:flex;flex-direction:column;gap:3px;border:1px solid var(--br)}
+.card.off{opacity:.5}.card h3{margin:8px 0 0;font-size:15px;font-weight:650}
+.ph{background:linear-gradient(135deg,var(--ph),var(--bg));border-radius:14px;height:110px;display:grid;place-items:center;font-size:52px}
+.pr{font-size:20px;font-weight:800;letter-spacing:-.02em;margin-top:4px}.pr small{font-weight:500;color:var(--mu);font-size:12px}
+.card .act{margin-top:8px}.card .act>button{width:100%}
+.st{display:flex;align-items:center;background:var(--ph);border-radius:12px;padding:3px}
+.st button{width:38px;height:36px;padding:0;background:var(--card);box-shadow:var(--sh);font-size:18px}
+.st input{border:0;background:none;text-align:center;font-weight:700;padding:0;box-shadow:none!important;-moz-appearance:textfield}
+#cart{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));width:min(680px,calc(100% - 24px));background:var(--tx);color:var(--bg);border-radius:20px;padding:12px 14px 12px 18px;display:flex;gap:14px;align-items:center;box-shadow:0 12px 40px #0004;z-index:6}
+#cart .mu{color:inherit;opacity:.7}.cinfo{flex:1;min-width:0}.cinfo b{font-size:19px}
+.bar{height:6px;background:#8884;border-radius:9px;margin:6px 0 4px;overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--ac),var(--ac2));border-radius:9px;transition:.3s}
+.modal{position:fixed;inset:0;background:#0007;backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:10;padding:12px}
+.modal.open{display:flex}
+.sheet{background:var(--card);width:100%;max-width:520px;max-height:94%;overflow:auto;border-radius:24px;padding:22px;box-shadow:var(--sh)}
+.sheet label{display:block;margin:12px 0 5px;font-size:13px;font-weight:600;color:var(--mu)}
+.line{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--br);font-size:14px}
+.wrap{overflow-x:auto;background:var(--card);border-radius:18px;box-shadow:var(--sh);border:1px solid var(--br)}
+table{width:100%;border-collapse:collapse}
+th,td{padding:12px 14px;border-bottom:1px solid var(--br);text-align:left;font-size:14px;white-space:nowrap}
+tr:last-child td{border:0}th{color:var(--mu);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+.badge{padding:3px 11px;border-radius:99px;font-size:12px;font-weight:700}
+.s-Pendiente{background:#d9770622;color:var(--wa)}.s-Armado{background:#2563eb22;color:var(--bl)}.s-Entregado{background:#05966922;color:var(--ok)}
+.tools{display:flex;gap:8px;margin:14px 0;flex-wrap:wrap}.tools select{max-width:240px}
+.ruta{display:grid;grid-template-columns:1fr 1fr;gap:16px}@media(max-width:720px){.ruta{grid-template-columns:1fr}}
+.box{background:var(--card);border-radius:18px;padding:16px;box-shadow:var(--sh);border:1px solid var(--br)}.box h3{margin:0 0 6px;font-size:15px}
+.qty{background:var(--ph);border-radius:8px;padding:2px 9px;font-weight:700}
+#toast{position:fixed;top:78px;left:50%;transform:translateX(-50%);background:var(--ok);color:#fff;padding:11px 18px;border-radius:14px;display:none;z-index:20;box-shadow:var(--sh);font-weight:600}
+.hide{display:none}
+@media print{header,#cart,.seg,.tools,.atabs,.pills,.oact,.noprint{display:none!important}}
+#admin{font-size:17px}
+.atabs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}
+.atabs button{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;padding:14px 8px;background:var(--card);border:2px solid var(--br);border-radius:18px;font-size:16px;box-shadow:var(--sh)}
+.atabs button span{font-size:28px}
+.atabs button.on{border-color:var(--ac);background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff}
+.atabs em{position:absolute;top:6px;right:8px;background:#ef4444;color:#fff;border-radius:99px;min-width:24px;padding:1px 7px;font-size:13px;font-style:normal}
+.pills{display:flex;gap:8px;flex-wrap:wrap}
+.pill{background:var(--card);border:2px solid var(--br);border-radius:99px;padding:11px 18px;font-size:16px}
+.pill.on{background:var(--tx);color:var(--bg);border-color:var(--tx)}
+.hint{margin:10px 2px 14px;font-size:15px}
+.empty{text-align:center;padding:40px 10px;background:var(--card);border-radius:18px;border:2px dashed var(--br);color:var(--mu);font-size:17px}
+.ocard{background:var(--card);border-radius:20px;padding:16px;margin-bottom:14px;box-shadow:var(--sh);border:1px solid var(--br)}
+.ohead{display:flex;justify-content:space-between;gap:10px;font-size:18px}.tot{font-size:20px}
+.ocard ul{list-style:none;padding:0;margin:10px 0;display:grid;gap:6px}
+.oact{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.big{padding:14px 20px;font-size:17px;border-radius:14px;flex:1;min-width:170px}
+.lnk{display:inline-block;background:var(--ph);padding:14px 16px;border-radius:14px;font-weight:600;color:var(--tx);text-decoration:none;font-size:16px}
+.undo{background:none;color:var(--mu);font-weight:500;text-decoration:underline;padding:8px}
+.step{background:var(--card);border-radius:20px;padding:16px;margin-bottom:16px;box-shadow:var(--sh);border:1px solid var(--br)}
+.step h3{margin:0 0 12px;font-size:18px;display:flex;align-items:center;gap:10px}
+.step h3 span{background:var(--ac);color:#fff;border-radius:50%;width:30px;height:30px;display:grid;place-items:center;font-size:15px}
+.twns{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.twn{display:flex;flex-direction:column;gap:2px;padding:14px;border:2px solid var(--br);background:var(--card);font-size:17px;border-radius:16px;text-align:left}
+.twn.on{border-color:var(--ac);background:var(--ac);color:#fff}.twn em{font-size:13px;opacity:.8;font-weight:500;font-style:normal}
+.chk{display:flex;align-items:center;gap:12px;padding:14px;border-radius:14px;background:var(--ph);margin-bottom:8px;font-size:17px;cursor:pointer}
+.chk input{width:24px;height:24px;accent-color:var(--ok);flex:none}.chk.done{opacity:.55;text-decoration:line-through}
+.prow{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--br);flex-wrap:wrap}
+.prow .pn{flex:1;min-width:160px}.pp{display:flex;align-items:center;gap:6px}.pp input{width:120px;font-size:17px}
+.sw{background:#ef444422;color:#dc2626;min-width:140px}.sw.on{background:#05966922;color:var(--ok)}
+.addf{display:grid;gap:10px}
+
+/* Responsive */
+img,svg{max-width:100%}
+input,select{font-size:16px}
+.ocards{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(340px,1fr))}.ocards .ocard{margin:0}
+@media (min-width:1100px){main{padding:28px}}
+@media (max-width:640px){
+ body{padding-bottom:104px}
+ header{padding:10px 14px;gap:8px}.logo{font-size:16px}
+ .seg button{padding:8px 12px}
+ main{padding:14px 12px}
+ .ocards{grid-template-columns:1fr}
+ .grid{grid-template-columns:repeat(2,1fr);gap:10px}
+ .card{padding:9px;border-radius:16px}.ph{height:84px;font-size:40px}.card h3{font-size:14px}.pr{font-size:17px}
+ .st button{width:34px}
+ #cart{padding:10px 10px 10px 14px;border-radius:18px;gap:10px}.cinfo b{font-size:17px}
+ .modal{padding:0;align-items:flex-end}
+ .sheet{max-width:none;border-radius:24px 24px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px));max-height:92%}
+ .atabs{gap:6px}.atabs button{font-size:13px;padding:10px 4px;border-radius:14px}.atabs button span{font-size:24px}
+ .ohead{font-size:16px}.tot{font-size:18px}
+ .big{min-width:100%}.oact .lnk{flex:1;text-align:center}
+ .twns{grid-template-columns:1fr 1fr}
+ .prow .pn{min-width:100%}.pp{flex:1}.pp input{width:100%}.sw{flex:1}
+ .pill{padding:10px 14px;font-size:15px}
+ #toast{max-width:calc(100% - 24px);top:70px;text-align:center}
+}
+@media (max-width:360px){.grid{grid-template-columns:1fr}}
+
+#mine{font-size:16px}
+.trk{display:flex;margin:14px 0 8px}
+.trk div{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:13px;color:var(--mu);position:relative;text-align:center}
+.trk div:not(:first-child)::before{content:"";position:absolute;top:13px;right:50%;width:100%;height:3px;background:var(--br)}
+.trk div.on:not(:first-child)::before{background:var(--ac)}
+.trk i{position:relative;z-index:1;width:28px;height:28px;border-radius:50%;background:var(--ph);display:grid;place-items:center;font-style:normal;font-weight:700;font-size:13px}
+.trk div.on{color:var(--tx);font-weight:600}.trk div.on i{background:var(--ac);color:#fff}
+.sumr{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}
+.sumr div{background:var(--card);border-radius:18px;padding:14px;box-shadow:var(--sh);border:1px solid var(--br);display:flex;flex-direction:column}
+.sumr b{font-size:22px}.sumr span{color:var(--mu);font-size:13px}
+
+/* ===== Tema "Almacén": papel kraft, etiquetas de góndola, sombras duras ===== */
+:root{--bg:#efe6d2;--card:#fffaf0;--tx:#1b1a17;--mu:#6f6652;--br:#d8ccb0;--ink:#1b1a17;--ac:#d9341f;--ac2:#d9341f;--yel:#ffc93c;--ph:#f3e9cf;--ok:#2f7d4f;--wa:#b8620a;--bl:#2459b8;--sh:4px 4px 0 var(--ink);--fd:"Archivo Black",Impact,"Arial Black",sans-serif;--fm:"DM Mono",ui-monospace,Menlo,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1b1915;--card:#26231d;--tx:#f4ead3;--mu:#aaa088;--br:#3b362b;--ink:#f4ead3;--ac:#ff6a4d;--ac2:#ff6a4d;--ph:#2f2b23;--ok:#58c386;--wa:#f0a043;--bl:#7fa8ff;--sh:4px 4px 0 var(--ink)}}
+:root[data-theme="dark"]{--bg:#1b1915;--card:#26231d;--tx:#f4ead3;--mu:#aaa088;--br:#3b362b;--ink:#f4ead3;--ac:#ff6a4d;--ac2:#ff6a4d;--ph:#2f2b23;--ok:#58c386;--wa:#f0a043;--bl:#7fa8ff;--sh:4px 4px 0 var(--ink)}
+body{font-family:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",sans-serif;background-image:radial-gradient(var(--br) 1.2px,transparent 1.2px);background-size:20px 20px}
+button{border:2px solid var(--ink);border-radius:10px;background:var(--card);box-shadow:2px 2px 0 var(--ink);font-weight:700}
+button:active{transform:translate(2px,2px);box-shadow:none}
+button.pri{background:var(--ac);color:#fff}
+button:disabled{box-shadow:none}
+input,select{border:2px solid var(--ink);border-radius:10px;background:var(--card)}
+input:focus,select:focus{border-color:var(--ink);box-shadow:3px 3px 0 var(--ac)}
+header{background:var(--yel);color:#1b1a17;border-bottom:3px solid var(--ink);backdrop-filter:none}
+.logo{font-family:var(--fd);text-transform:uppercase;letter-spacing:.02em;font-weight:400}
+.logo span{background:#1b1a17;-webkit-text-fill-color:#ffc93c;color:#ffc93c;padding:2px 9px;border-radius:4px;display:inline-block;transform:rotate(-2deg)}
+header .seg{background:#fffaf0;border:2px solid #1b1a17;border-radius:12px}
+header .seg button{background:none;border:0;box-shadow:none;color:#1b1a17;border-radius:9px}
+header .seg button.on{background:#1b1a17;color:#fffaf0}
+.search input{box-shadow:var(--sh)}
+.chip{border:2px solid var(--ink);border-radius:8px;box-shadow:none;font-weight:600}
+.chip.on{background:var(--yel);color:#1b1a17}
+.grid{gap:18px}
+.card{--cp:12px;padding:var(--cp);gap:0;border:2px solid var(--ink);border-radius:6px;box-shadow:var(--sh);background:var(--card)}
+.ph{margin:calc(var(--cp)*-1) calc(var(--cp)*-1) 10px;border-radius:0;border-bottom:2px solid var(--ink);background:var(--yel)}
+.card:nth-child(4n+2) .ph{background:#ffb4a2}.card:nth-child(4n+3) .ph{background:#b9e0c5}.card:nth-child(4n+4) .ph{background:#bcd3f5}
+.card h3{font-weight:800;margin:0}
+.pr{display:inline-block;align-self:flex-start;background:var(--ink);color:var(--bg);padding:2px 10px;border-radius:4px;transform:rotate(-1.5deg);margin:8px 0 4px;font-family:var(--fd);font-weight:400;font-size:21px;letter-spacing:0}
+.pr small{color:inherit;opacity:.7;font-family:"Bricolage Grotesque",sans-serif}
+.card .act{margin-top:10px}
+.st{background:var(--card);border:2px solid var(--ink);border-radius:10px}
+.st button{background:var(--yel);color:#1b1a17;border:2px solid var(--ink);border-radius:8px;box-shadow:none}
+.st input{font-family:var(--fm);font-size:17px;background:transparent}
+#cart{background:var(--yel);color:#1b1a17;border:3px solid #1b1a17;border-radius:12px;box-shadow:5px 5px 0 #1b1a17}
+#cart .mu{color:#1b1a17;opacity:.75}.cinfo b{font-family:var(--fd);font-weight:400;font-size:21px}
+#cart button{border-color:#1b1a17;box-shadow:2px 2px 0 #1b1a17}
+.sheet{border:3px solid var(--ink);border-radius:8px;box-shadow:8px 8px 0 var(--ink)}
+.sheet h2{font-family:var(--fd);font-weight:400;text-transform:uppercase}
+.line{border-bottom:2px dashed var(--br)}
+.qty{background:var(--yel);color:#1b1a17;border:2px solid var(--ink);border-radius:6px;font-family:var(--fm);font-weight:500}
+.atabs button{border:2px solid var(--ink);border-radius:10px;box-shadow:3px 3px 0 var(--ink);font-weight:700}
+.atabs button.on{background:var(--yel);color:#1b1a17;border-color:var(--ink)}
+.atabs em{border:2px solid var(--ink)}
+.pill{border:2px solid var(--ink);border-radius:8px;box-shadow:2px 2px 0 var(--ink)}
+.pill.on{background:var(--yel);color:#1b1a17;border-color:var(--ink)}
+.ocard,.step,.box,.wrap,.sumr div{border:2px solid var(--ink);border-radius:8px;box-shadow:var(--sh)}
+.ocard .ohead{border-bottom:2px dashed var(--br);padding-bottom:10px;margin-bottom:6px}
+.ohead>div>b{font-family:var(--fd);font-weight:400}.tot,.sumr b{font-family:var(--fm);font-weight:500}
+.step h3{font-family:var(--fd);font-weight:400;text-transform:uppercase;font-size:16px;letter-spacing:.01em}
+.step h3 span{border:2px solid var(--ink);font-family:var(--fm)}
+.twn{border-color:var(--ink);box-shadow:3px 3px 0 var(--ink);border-radius:10px}
+.twn.on{background:var(--yel);color:#1b1a17}
+.chk{border:2px solid var(--ink);background:var(--card)}
+.empty{border:2px dashed var(--ink);border-radius:8px}
+.lnk{border:2px solid var(--ink);box-shadow:2px 2px 0 var(--ink);background:var(--card)}
+.undo{border:0;box-shadow:none;background:none}
+.sw{box-shadow:2px 2px 0 var(--ink)}
+.trk i{border:2px solid var(--ink)}
+#toast{background:var(--ink);color:var(--bg);border:2px solid var(--ink);border-radius:8px;box-shadow:4px 4px 0 var(--ac)}
+@media (max-width:640px){
+ .grid{gap:14px}.card{--cp:9px}.pr{font-size:18px}
+ .sheet{border-radius:14px 14px 0 0;box-shadow:none;border-bottom:0}
+ header .seg button{padding:8px 10px;font-size:14px}
+}
+.ph img{width:100%;height:100%;object-fit:cover;display:block}
+.tn{width:36px;height:36px;object-fit:cover;border-radius:6px;vertical-align:middle;border:2px solid var(--ink)}
+.up{cursor:pointer;padding:9px 12px;font-size:14px}
+/* ===== Sidebar, footer, páginas, listas de precios ===== */
+body{padding-bottom:0}
+#side{position:fixed;left:0;top:0;bottom:0;width:min(290px,84%);background:var(--card);border-right:3px solid var(--ink);transform:translateX(-105%);transition:transform .25s;z-index:12;padding:calc(16px + env(safe-area-inset-top,0px)) 14px calc(16px + env(safe-area-inset-bottom,0px));overflow:auto;display:flex;flex-direction:column;gap:6px}
+#side.open{transform:none}
+#ov{position:fixed;inset:0;background:#0007;z-index:11;display:none}#ov.open{display:block}
+.content{min-width:0}
+.hbar{display:flex;align-items:center;gap:12px}
+.burger{background:#fffaf0;color:#1b1a17;border:2px solid #1b1a17;box-shadow:2px 2px 0 #1b1a17;width:42px;height:42px;padding:0;font-size:20px}
+.me{background:var(--yel);color:#1b1a17;border:2px solid var(--ink);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:2px;box-shadow:3px 3px 0 var(--ink);margin-bottom:8px}
+.me b{font-family:var(--fd);font-weight:400}.me span{font-size:13px}.me button{margin-top:8px;font-size:14px;padding:8px 10px;color:#1b1a17}
+.me button.pri{color:#fff}
+#side nav{display:grid;gap:6px}
+#side nav button{position:relative;display:flex;align-items:center;gap:10px;text-align:left;border:2px solid transparent;background:none;box-shadow:none;border-radius:10px;padding:11px 12px;font-size:15px}
+#side nav button:hover{background:var(--ph)}
+#side nav button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+#side nav button span{font-size:19px}
+#side nav em{margin-left:auto;background:var(--ac);color:#fff;border-radius:99px;min-width:22px;text-align:center;padding:0 7px;font-size:12px;font-style:normal}
+.sep{font-family:var(--fm);font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--mu);margin:14px 4px 2px}
+.strip{background:var(--card);border:2px dashed var(--ink);border-radius:10px;padding:10px 14px;margin-bottom:14px;display:grid;gap:4px;font-size:14px}
+.strip a{color:var(--ac)}
+.err{color:#dc2626;font-size:13px;font-weight:600;margin-top:6px}
+.ptitle{font-family:var(--fd);font-weight:400;text-transform:uppercase;font-size:28px;margin:4px 0 8px}
+.lead{font-size:17px;max-width:62ch}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:16px 0}
+.facts>div{background:var(--yel);color:#1b1a17;border:2px solid var(--ink);border-radius:8px;box-shadow:var(--sh);padding:14px;display:flex;flex-direction:column}
+.facts b{font-family:var(--fd);font-weight:400;font-size:30px}.facts span{font-size:13px}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;align-items:start}
+details{background:var(--card);border:2px solid var(--ink);border-radius:8px;box-shadow:3px 3px 0 var(--ink);padding:12px 14px;margin-bottom:12px}
+summary{cursor:pointer;font-weight:700}details p{margin:8px 0 0}
+.zgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.zc{background:var(--card);border:2px solid var(--ink);border-radius:8px;box-shadow:var(--sh);padding:14px;display:grid;gap:10px}
+.zc.mine{background:var(--yel);color:#1b1a17}.zc.mine .mu{color:#1b1a17}
+.zc .ohead b{font-family:var(--fd);font-weight:400}
+.days{display:flex;gap:4px}.days i{flex:1;text-align:center;font-style:normal;font-size:12px;font-family:var(--fm);padding:5px 0;border:2px solid var(--ink);border-radius:6px;opacity:.35}
+.days i.on{background:var(--ac);color:#fff;opacity:1}
+.tag{background:#1b1a17;color:#ffc93c;padding:2px 9px;border-radius:99px;font-size:12px}
+.prow select{width:auto;min-width:170px}
+.atabs{grid-template-columns:repeat(4,1fr)}
+.pp label{font-size:12px}
+footer{background:#1b1a17;color:#efe6d2;margin-top:40px;padding:32px 20px calc(110px + env(safe-area-inset-bottom,0px));border-top:4px solid var(--yel)}
+.fgrid{max-width:1120px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px}
+footer h4{font-family:var(--fd);font-weight:400;color:#ffc93c;margin:0 0 8px;text-transform:uppercase;font-size:14px}
+footer p{margin:0;font-size:14px;line-height:1.7}
+.flink{display:block;background:none;border:0;box-shadow:none;border-radius:0;color:inherit;padding:3px 0;font-weight:500;text-decoration:underline;text-align:left}
+.fbot{max-width:1120px;margin:24px auto 0;padding-top:14px;border-top:1px solid #efe6d233;font-size:13px;opacity:.7}
+@media (min-width:900px){
+ .layout{display:grid;grid-template-columns:250px 1fr;align-items:start}
+ #side{position:sticky;top:58px;transform:none;height:calc(100vh - 58px);width:auto;z-index:1;transition:none}
+ #ov{display:none!important}.burger{display:none}
+ #cart{left:calc(50% + 125px)}
+}
+@media (max-width:640px){.atabs button{font-size:12px}.facts{grid-template-columns:1fr}.ptitle{font-size:24px}}
+@media print{#side,footer,.burger,#ov{display:none!important}.layout{display:block}}
+/* ===== Pantalla de inicio: tipo de comprador ===== */
+#welcome{position:fixed;inset:0;z-index:30;display:none;overflow:auto;background:var(--bg);background-image:radial-gradient(var(--br) 1.2px,transparent 1.2px);background-size:20px 20px;padding:calc(20px + env(safe-area-inset-top,0px)) 16px calc(20px + env(safe-area-inset-bottom,0px))}
+#welcome.open{display:block}
+.wbox{max-width:860px;margin:0 auto;text-align:center}
+.wbox .logo{font-size:22px;margin:10px 0 18px}
+.wbox h1{font-family:var(--fd);font-weight:400;text-transform:uppercase;font-size:clamp(26px,5vw,40px);margin:0 0 22px;line-height:1.1}
+.wopts{display:grid;grid-template-columns:1fr 1fr;gap:20px;text-align:left}
+.wc{background:var(--card);border:3px solid var(--ink);border-radius:10px;box-shadow:6px 6px 0 var(--ink);padding:22px;display:flex;flex-direction:column;gap:10px}
+.wc:nth-child(1){background:var(--yel);color:#1b1a17}
+.wc .wi{font-size:44px;line-height:1}
+.wc h2{font-family:var(--fd);font-weight:400;font-size:22px;margin:0;text-transform:uppercase}
+.wc p{margin:0}.wc:nth-child(1) p{color:#1b1a17}
+.wc form{display:grid;gap:8px;margin-top:auto}
+.wc>.big{margin-top:auto}.wc .big{width:100%;min-width:0}
+.wfoot{margin-top:22px;font-size:14px}.wfoot a{color:var(--ac);font-weight:700}
+@media (max-width:640px){.wopts{grid-template-columns:1fr}.wc{padding:18px}}
+</style></head><body>
+<header><div class="hbar"><button class="burger" onclick="toggleSide()" aria-label="Abrir menú">☰</button><div class="logo">🚚 <span>Distribuidora</span></div></div></header>
+<div class="layout"><aside id="side"></aside><div class="content"><main>
+<section id="shop"><div class="strip" id="strip"></div>
+ <div class="search"><i>🔍</i><input id="q" type="search" placeholder="Buscar producto o marca…" oninput="q=this.value;renderGrid()"></div>
+ <div class="chips" id="chips"></div>
+ <div class="grid" id="grid"></div>
+</section>
+<section id="mine" class="hide"></section>
+<section id="admin" class="hide"><div class="atabs" id="atabs"></div><div id="adm"></div></section>
+<section id="about" class="hide"><h1 class="ptitle">Sobre nosotros</h1>
+<p class="lead">Somos una distribuidora familiar que lleva mercadería a los comercios de la zona. Trabajamos con trato directo, precios claros y entregas puntuales.</p>
+<div class="facts"><div><b>+20</b><span>años repartiendo</span></div><div><b>5</b><span>pueblos con reparto propio</span></div><div><b>+300</b><span>comercios que nos eligen</span></div></div>
+<div class="cols"><div class="box"><h3>🤝 Cómo trabajamos</h3><p>Armás tu pedido desde el celular, lo preparamos y te lo llevamos en el próximo reparto de tu pueblo. El pago lo acordamos con vos: transferencia, cheque o efectivo contra entrega.</p></div><div class="box"><h3>🏷️ Dos listas de precios</h3><p>Los consumidores finales compran con la lista general. Si comprás por cantidad, ingresá con tu CUIL y vas a ver tu lista.</p></div><div class="box"><h3>🕗 Horarios</h3><p>Lunes a viernes de 8 a 17 hs.<br>Sábados de 8 a 12 hs.</p></div></div></section>
+<section id="zonas" class="hide"></section>
+<section id="ayuda" class="hide"><h1 class="ptitle">Ayuda y contacto</h1>
+<div class="cols"><div>
+<details open><summary>¿Cómo hago un pedido?</summary><p>Entrá al catálogo, buscá tus productos y tocá "Agregar". Elegí la cantidad y, cuando termines, tocá "Cerrar pedido".</p></details>
+<details><summary>¿Qué es la lista mayorista?</summary><p>Es la lista de precios para quienes compran por cantidad. Si sos cliente, ingresá con tu CUIL y vas a ver tus precios.</p></details>
+<details><summary>¿Cómo ingreso con mi CUIL?</summary><p>Al abrir la página elegí "Compro por cantidad" y escribí tu número. Si ya estás adentro, tocá "Salir" en el menú y volvé a elegir. Si no te reconoce, pedinos que te demos de alta.</p></details>
+<details><summary>¿Cómo se paga?</summary><p>El pago es a convenir: transferencia, cheque o efectivo contra entrega.</p></details>
+<details><summary>¿Cuándo me llega el pedido?</summary><p>En el próximo reparto de tu pueblo. Mirá los días en "Zonas y días de reparto".</p></details>
+<details><summary>¿Puedo cambiar o cancelar un pedido?</summary><p>Sí, avisanos por WhatsApp antes de que lo armemos.</p></details>
+</div><div class="box"><h3>📞 Escribinos</h3><p>Te respondemos de lunes a viernes de 8 a 17 hs.</p><div class="oact"><a class="lnk" target="_blank" rel="noopener" href="https://wa.me/5490000000000">💬 WhatsApp</a><a class="lnk" href="tel:0005550000">📞 Llamar</a><a class="lnk" href="mailto:pedidos@distribuidora.com.ar">✉️ Email</a></div></div></div></section>
+</main><footer><div class="fgrid"><div><h4>Distribuidora</h4><p>Mercadería para tu comercio, directo a la puerta. Pedí cuando quieras y pagá a convenir.</p></div><div><h4>Contacto</h4><p>💬 WhatsApp: (000) 555-0000<br>✉️ pedidos@distribuidora.com.ar<br>🕗 Lun a vie de 8 a 17 hs</p></div><div><h4>Secciones</h4><button class="flink" onclick="go('shop')">Catálogo</button><button class="flink" onclick="go('mine')">Mis pedidos</button><button class="flink" onclick="go('zonas')">Zonas y días de reparto</button><button class="flink" onclick="go('ayuda')">Ayuda y contacto</button><button class="flink" onclick="go('about')">Sobre nosotros</button></div></div><div class="fbot">© 2026 Distribuidora · Boceto de demostración</div></footer>
+</div></div><div id="ov" onclick="toggleSide(false)"></div>
+<div id="cart"></div>
+<div class="modal" id="co"><div class="sheet"><h2 style="margin:0 0 8px">Cerrar pedido</h2><div id="sum"></div>
+<form onsubmit="send(event)">
+ <label>Localidad / pueblo *</label><select name="town" required id="town"></select>
+ <label>Nombre de fantasía del comercio *</label><input name="local" required placeholder="Ej: Almacén Don Pepe">
+ <label>Dirección exacta *</label><input name="addr" required placeholder="Calle y número">
+ <label>Teléfono de contacto *</label><input name="tel" type="tel" required placeholder="221 555-0000">
+ <label>Pago a convenir *</label><select name="pay" required><option>Transferencia</option><option>Cheque</option><option>Efectivo contra entrega</option></select>
+ <div style="display:flex;gap:8px;margin-top:18px"><button type="button" onclick="closeCo()">Volver</button><button class="pri" style="flex:1">Confirmar pedido</button></div>
+</form></div></div>
+<div id="welcome" class="open"><div class="wbox">
+<div class="logo">🚚 <span>Distribuidora</span></div>
+<h1>¿Cómo querés comprar?</h1>
+<div class="wopts">
+<article class="wc"><div class="wi">🛒</div><h2>Soy consumidor final</h2><p>Comprá con la lista de precios general. No hace falta registrarse.</p><button class="pri big" onclick="enterFinal()">Entrar al catálogo</button></article>
+<article class="wc"><div class="wi">📦</div><h2>Compro por cantidad</h2><p>Ingresá con tu CUIL y mirá tu lista de precios.</p><form onsubmit="login(event)"><input id="cuil" inputmode="numeric" required maxlength="13" placeholder="CUIL: 20-12345678-6" oninput="this.value=fc(this.value.replace(/\D/g,'').slice(0,11))"><div id="lgerr" class="err"></div><button class="pri big">Ingresar con mi CUIL</button></form><p class="mu">Demo: probá con 20-12345678-6</p></article>
+</div>
+<p class="wfoot">¿Todavía no estás cargado como cliente? <a target="_blank" rel="noopener" href="https://wa.me/5490000000000">Escribinos por WhatsApp</a> · <a href="#" onclick="enterAdmin();return false">Soy el mayorista</a></p>
+</div></div>
+<div id="toast"></div>
+<script>
+const TOWNS=["Magdalena","Verónica","Punta Indio","Brandsen","Chascomús"],ST=["Pendiente","Armado","Entregado"];
+let P=[
+{id:1,name:"Aceite girasol 900ml",brand:"Cañuelas",cat:"Almacén",emoji:"🛢️",price:2100,active:true},
+{id:2,name:"Fideos tirabuzón 500g",brand:"Matarazzo",cat:"Almacén",emoji:"🍝",price:950,active:true},
+{id:3,name:"Yerba mate 1kg",brand:"Playadito",cat:"Almacén",emoji:"🧉",price:4300,active:true},
+{id:4,name:"Gaseosa cola 2.25L",brand:"Línea Cola",cat:"Bebidas",emoji:"🥤",price:2400,active:true},
+{id:5,name:"Agua mineral 1.5L",brand:"Villa Serrana",cat:"Bebidas",emoji:"💧",price:1100,active:true},
+{id:6,name:"Detergente 750ml",brand:"Brillo",cat:"Limpieza",emoji:"🧴",price:1800,active:true},
+{id:7,name:"Lavandina 1L",brand:"Brillo",cat:"Limpieza",emoji:"🧼",price:900,active:false},
+{id:8,name:"Galletitas dulces 300g",brand:"Dulcitas",cat:"Golosinas",emoji:"🍪",price:1300,active:true}];
+P.forEach(p=>p.pm=Math.round(p.price*.88/10)*10);
+const ME={local:"Almacén Don Pepe",addr:"Calle 12 n° 340",tel:"2221 55-0101",town:"Magdalena"};
+let CLIENTS=[{cuil:"20123456786",...ME,list:"mayorista"},{cuil:"27234567891",local:"Kiosco La Esquina",addr:"Av. 5 y 20",tel:"2221 55-0202",town:"Magdalena",list:"mayorista"}];
+let orders=[
+{id:101,cuil:"20123456786",list:"mayorista",date:"6/10/2026",local:"Almacén Don Pepe",addr:"Calle 12 n° 340",tel:"2221 55-0101",town:"Magdalena",pay:"Transferencia",status:"Pendiente",items:[{pid:1,q:24},{pid:3,q:4}]},
+{id:102,cuil:"27234567891",list:"mayorista",local:"Kiosco La Esquina",addr:"Av. 5 y 20",tel:"2221 55-0202",town:"Magdalena",pay:"Efectivo contra entrega",status:"Armado",items:[{pid:4,q:18},{pid:8,q:12}]},
+{id:103,list:"final",local:"Despensa Marta",addr:"Belgrano 88",tel:"2229 55-0303",town:"Verónica",pay:"Cheque",status:"Pendiente",items:[{pid:2,q:40},{pid:6,q:6}]},
+{id:97,cuil:"20123456786",list:"mayorista",date:"12/9/2026",...ME,pay:"Transferencia",status:"Entregado",items:[{pid:2,q:30},{pid:5,q:12}]},
+{id:99,cuil:"20123456786",list:"mayorista",date:"26/9/2026",...ME,pay:"Efectivo contra entrega",status:"Entregado",items:[{pid:1,q:12},{pid:3,q:6},{pid:8,q:10}]}];
+let cart={},q="",cat="",adm="ped",ofilter="Pendiente",town=null,loaded={};
+const $=s=>document.querySelector(s),fm=n=>"$"+Math.round(n).toLocaleString("es-AR"),pr=id=>P.find(p=>p.id==id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let user=null;const cl=()=>user?user.list:"final",mine=o=>o.cuil===(user?user.cuil:""),unit=(p,l)=>l=="mayorista"?p.pm:p.price;
+const oTotal=o=>o.items.reduce((t,i)=>t+i.q*unit(pr(i.pid),o.list),0);
+orders.forEach(o=>o.total=oTotal(o));
+let view="shop";
+const NAV=[["shop","🛒","Catálogo"],["mine","📋","Mis pedidos"],["zonas","📍","Zonas y días de reparto"],["ayuda","💬","Ayuda y contacto"],["about","🏪","Sobre nosotros"]];
+const DAYS={"Magdalena":[2,5],"Verónica":[2],"Punta Indio":[4],"Brandsen":[3],"Chascomús":[1,4]},DN=["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
+const okCuil=c=>{const d=c.replace(/\D/g,"");if(d.length!=11)return false;const w=[5,4,3,2,7,6,5,4,3,2];let t=0;for(let i=0;i<10;i++)t+=d[i]*w[i];let v=11-t%11;if(v==11)v=0;return v==+d[10]};
+const fc=c=>c.replace(/^(\d{2})(\d{8})(\d)$/,"$1-$2-$3");
+function nextDel(t){for(let i=1;i<=7;i++){const d=new Date();d.setDate(d.getDate()+i);if(DAYS[t].includes(d.getDay()))return d}}
+const fdate=d=>d.toLocaleDateString("es-AR",{weekday:"long",day:"numeric",month:"long"});
+function toggleSide(o){const on=o===undefined?!$("#side").classList.contains("open"):o;$("#side").classList.toggle("open",on);$("#ov").classList.toggle("open",on)}
+function go(v){view=v;["shop","mine","zonas","ayuda","about","admin"].forEach(k=>$("#"+k).classList.toggle("hide",k!=v));$("#cart").classList.toggle("hide",v!="shop");toggleSide(false);if(v=="admin")renderAdmin();if(v=="mine")renderMine();if(v=="zonas")renderZonas();renderSide();scrollTo(0,0)}
+function renderSide(){
+ const cur=orders.filter(o=>mine(o)&&o.status!="Entregado").length,pend=cnt("Pendiente");
+ $("#side").innerHTML=`<div class="me">${user?`<b>${esc(user.local)}</b><span>📍 ${esc(user.town)} · Lista ${user.list=="mayorista"?"mayorista":"consumidor final"}</span><button onclick="logout()">Salir</button>`:`<b>👤 Consumidor final</b><span>Comprás con la lista de precios general</span><button class="pri" onclick="showWelcome()">🔁 Cambiar tipo de cliente</button>`}</div><nav>${NAV.map(([k,i,l])=>`<button class="${view==k?"on":""}" onclick="go('${k}')"><span>${i}</span>${l}${k=="mine"&&cur?`<em>${cur}</em>`:""}</button>`).join("")}</nav><div class="sep">Mayorista</div><nav><button class="${view=="admin"?"on":""}" onclick="go('admin')"><span>🔧</span>Panel de administración${pend?`<em>${pend}</em>`:""}</button></nav>`}
+function renderStrip(){
+ const d=user?nextDel(user.town):null;
+ $("#strip").innerHTML=`<div>🏷️ ${user?`Hola <b>${esc(user.local)}</b>, estás viendo la <b>lista ${user.list=="mayorista"?"mayorista":"de consumidor final"}</b>. <a href="#" onclick="logout();return false">Salir</a>`:`Estás viendo los precios de <b>consumidor final</b>. ¿Comprás por cantidad? <a href="#" onclick="openLogin();return false"><b>Ingresá con tu CUIL</b></a> para ver tu lista.`}</div>${d?`<div>🚚 Tu próximo reparto en <b>${esc(user.town)}</b>: <b>${fdate(d)}</b></div>`:""}`}
+function renderZonas(){
+ const T=user?user.town:"";
+ $("#zonas").innerHTML=`<h1 class="ptitle">Zonas y días de reparto</h1><p class="mu hint">Pedí con un día de anticipación y te lo llevamos en el próximo reparto de tu pueblo.</p><div class="zgrid">${TOWNS.map(t=>`<article class="zc ${t==T?"mine":""}"><div class="ohead"><b>${t}</b>${t==T?`<span class="tag">⭐ Tu zona</span>`:""}</div><div class="days">${DN.slice(1).concat(DN[0]).map((n,i)=>`<i class="${DAYS[t].includes((i+1)%7)?"on":""}">${n.slice(0,3)}</i>`).join("")}</div><div class="mu">Próximo reparto: <b>${fdate(nextDel(t))}</b></div></article>`).join("")}</div>`}
+function showWelcome(){toggleSide(false);$("#lgerr").textContent="";$("#cuil").value="";$("#welcome").classList.add("open");scrollTo(0,0)}
+function openLogin(){showWelcome()}
+function enterFinal(){user=null;$("#co form").reset();$("#welcome").classList.remove("open");refresh();toast("Estás comprando como consumidor final")}
+function enterAdmin(){$("#welcome").classList.remove("open");go("admin")}
+function login(e){e.preventDefault();const d=$("#cuil").value.replace(/\D/g,""),er=m=>{$("#lgerr").textContent=m};
+ if(!okCuil(d))return er("El CUIL no es válido. Revisá los números.");
+ const c=CLIENTS.find(x=>x.cuil==d);if(!c)return er("No encontramos ese CUIL entre nuestros clientes. Podés comprar como consumidor final o pedir que te den de alta.");
+ user=c;$("#co form").reset();$("#welcome").classList.remove("open");refresh();toast("¡Hola "+c.local+"! Ya ves tu lista de precios.")}
+function logout(){user=null;cart={};$("#co form").reset();renderGrid();renderCart();renderStrip();renderSide();showWelcome()}
+function refresh(){renderGrid();renderCart();renderStrip();go("shop")}
+function vCli(){return `<div class="step"><h3>👥 Clientes con acceso</h3>${CLIENTS.map(c=>`<div class="prow"><div class="pn"><b>${esc(c.local)}</b><div class="mu">CUIL ${fc(c.cuil)} · ${esc(c.town)}</div></div><select onchange="setList('${c.cuil}',this.value)"><option value="mayorista" ${c.list=="mayorista"?"selected":""}>Lista mayorista</option><option value="final" ${c.list=="final"?"selected":""}>Consumidor final</option></select><button onclick="delCli('${c.cuil}')">🗑 Quitar</button></div>`).join("")||`<p class="mu">Todavía no hay clientes.</p>`}</div><div class="step"><h3>➕ Dar de alta un cliente</h3><form class="addf" onsubmit="addCli(event)"><input name="cuil" required inputmode="numeric" placeholder="CUIL (11 números)"><input name="local" required placeholder="Nombre del comercio"><select name="town">${TOWNS.map(t=>`<option>${t}</option>`).join("")}</select><select name="list"><option value="mayorista">Lista mayorista</option><option value="final">Consumidor final</option></select><button class="pri big">Dar de alta</button></form></div>`}
+function setList(c,l){CLIENTS.find(x=>x.cuil==c).list=l;if(user&&user.cuil==c){renderGrid();renderCart();renderStrip();renderSide()}toast("Lista actualizada ✓")}
+function delCli(c){if(user&&user.cuil==c)logout();CLIENTS=CLIENTS.filter(x=>x.cuil!=c);renderAdmin();toast("Cliente quitado")}
+function addCli(e){e.preventDefault();const f=new FormData(e.target),c=f.get("cuil").replace(/\D/g,"");if(!okCuil(c))return toast("El CUIL no es válido");if(CLIENTS.some(x=>x.cuil==c))return toast("Ese CUIL ya está cargado");CLIENTS.push({cuil:c,local:f.get("local"),addr:"",tel:"",town:f.get("town"),list:f.get("list")});renderAdmin();toast("Cliente dado de alta ✓")}
+let mtab="curso";const STEPS=["Recibido","Preparado","Entregado"];
+function mCard(o){
+ const i=ST.indexOf(o.status),done=i==2;
+ return `<article class="ocard"><div class="ohead"><div><b>Pedido #${o.id}</b><div class="mu">${o.date||""} · ${esc(o.town)}</div></div><b class="tot">${fm(o.total)}</b></div>${done?"":`<div class="trk">${STEPS.map((t,k)=>`<div class="${k<=i?"on":""}"><i>${k<i?"✓":k+1}</i>${t}</div>`).join("")}</div>`}<ul>${o.items.map(x=>`<li><span class="qty">${x.q}</span> ${esc(pr(x.pid).name)} <span class="mu">${fm(x.q*unit(pr(x.pid),o.list))}</span></li>`).join("")}</ul><div class="mu">💬 Pago: ${esc(o.pay)}</div>${done?`<div class="oact"><button class="pri big" onclick="repeat(${o.id})">🔁 Repetir este pedido</button></div>`:""}</article>`}
+function renderMine(){
+ const my=orders.filter(mine).sort((a,b)=>b.id-a.id),cur=my.filter(o=>o.status!="Entregado"),his=my.filter(o=>o.status=="Entregado"),l=mtab=="curso"?cur:his,spent=his.reduce((t,o)=>t+o.total,0);
+ $("#mine").innerHTML=(user?"":`<p class="mu hint">Ingresá con tu CUIL para ver todo tu historial de compras.</p>`)+`<div class="pills"><button class="pill ${mtab=="curso"?"on":""}" onclick="mtab='curso';renderMine()">En curso <b>${cur.length}</b></button><button class="pill ${mtab=="hist"?"on":""}" onclick="mtab='hist';renderMine()">Historial de compras <b>${his.length}</b></button></div>`+(mtab=="hist"&&his.length?`<div class="sumr"><div><b>${his.length}</b><span>pedidos entregados</span></div><div><b>${fm(spent)}</b><span>total comprado</span></div></div>`:`<p class="mu hint">${mtab=="curso"?"Seguí el estado de tus pedidos.":"Todo lo que ya te entregaron."}</p>`)+(l.length?`<div class="ocards">${l.map(mCard).join("")}</div>`:`<div class="empty">${mtab=="curso"?"No tenés pedidos en curso":"Todavía no tenés compras entregadas"}</div>`)}
+function repeat(id){orders.find(o=>o.id==id).items.forEach(i=>{if(pr(i.pid).active)cart[i.pid]=(cart[i.pid]||0)+i.q});renderGrid();renderCart();go("shop");toast("Productos agregados al carrito")}
+const tn=p=>p.img?`<img class="tn" src="${p.img}" alt="">`:p.emoji;
+function setImg(id,f){if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,600/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext("2d").drawImage(im,0,0,c.width,c.height);pr(id).img=c.toDataURL("image/jpeg",.82);renderAdmin();renderGrid();toast("Foto guardada ✓")};im.src=r.result};r.readAsDataURL(f)}
+function renderChips(){$("#chips").innerHTML=["",...new Set(P.map(p=>p.cat))].map(c=>`<button class="chip ${c==cat?"on":""}" onclick="cat='${c}';renderChips();renderGrid()">${c||"Todos"}</button>`).join("")}
+function renderGrid(){
+ const l=P.filter(p=>(!cat||p.cat===cat)&&(p.name+" "+p.brand).toLowerCase().includes(q.toLowerCase()));
+ $("#grid").innerHTML=l.map(p=>{const n=cart[p.id]||0;return `<article class="card ${p.active?"":"off"}"><div class="ph">${p.img?`<img src="${p.img}" alt="${esc(p.name)}">`:p.emoji}</div><h3>${esc(p.name)}</h3><div class="mu">${esc(p.brand)}</div><div class="pr">${fm(unit(p,cl()))} <small>/ unidad</small></div>${cl()=="mayorista"?`<div class="mu">Consumidor final: <s>${fm(p.price)}</s></div>`:""}<div class="act">${!p.active?`<div class="mu">⏸ Sin stock</div>`:n?`<div class="st"><button onclick="setQ(${p.id},${n-1})">−</button><input type="number" min="0" value="${n}" onchange="setQ(${p.id},this.value)"><button onclick="setQ(${p.id},${n+1})">+</button></div>`:`<button class="pri" onclick="setQ(${p.id},1)">Agregar</button>`}</div></article>`}).join("")||`<p class="mu">Sin resultados.</p>`}
+function setQ(id,v){v=Math.max(0,parseInt(v)||0);v?cart[id]=v:delete cart[id];renderGrid();renderCart();if($("#co").classList.contains("open")){if(!Object.keys(cart).length)closeCo();else renderSum()}}
+function totals(){let t=0,n=0;for(const id in cart){t+=cart[id]*unit(pr(id),cl());n+=cart[id]}return{t,n}}
+function renderCart(){const{t,n}=totals();$("#cart").innerHTML=`<div class="cinfo"><div><b>${fm(t)}</b> <span class="mu">· ${n} unidad${n==1?"":"es"}</span></div>${n?"":`<div class="mu">Agregá productos para armar tu pedido</div>`}</div><button class="pri" ${n?"":"disabled"} onclick="openCo()">Cerrar pedido</button>`}
+function renderSum(){$("#sum").innerHTML=Object.entries(cart).map(([id,n])=>{const p=pr(id);return `<div class="line"><span>${tn(p)} ${esc(p.name)} <span class="qty">× ${n}</span></span><span>${fm(n*unit(p,cl()))} <a href="#" onclick="setQ(${id},0);return false" title="Quitar">✕</a></span></div>`}).join("")+`<div class="line"><b>Total</b><b>${fm(totals().t)}</b></div>`}
+function openCo(){renderSum();const f=$("#co form").elements;if(user&&!f.local.value){f.local.value=user.local;f.addr.value=user.addr||"";f.tel.value=user.tel||"";f.town.value=user.town}$("#co").classList.add("open")}function closeCo(){$("#co").classList.remove("open")}
+function toast(m){const t=$("#toast");t.textContent=m;t.style.display="block";setTimeout(()=>t.style.display="none",2600)}
+function send(e){e.preventDefault();const f=new FormData(e.target);const o={id:Math.max(...orders.map(o=>o.id))+1,local:f.get("local"),addr:f.get("addr"),tel:f.get("tel"),town:f.get("town"),pay:f.get("pay"),cuil:user?user.cuil:"",list:cl(),date:new Date().toLocaleDateString("es-AR"),status:"Pendiente",items:Object.entries(cart).map(([id,q])=>({pid:+id,q}))};o.total=oTotal(o);orders.unshift(o);cart={};e.target.reset();closeCo();renderGrid();renderCart();mtab="curso";go("mine");toast("¡Pedido #"+o.id+" enviado! Pago a convenir.")}
+const itx=o=>o.items.map(i=>`${esc(pr(i.pid).name)} ×${i.q}`).join(", ");
+const LBL={Pendiente:"Por armar",Armado:"Para entregar",Entregado:"Entregados"};
+const cnt=s=>orders.filter(o=>o.status==s).length;
+function setAdm(t){adm=t;renderAdmin()}
+function renderAdmin(){renderSide();
+ $("#atabs").innerHTML=[["ped","📋","Pedidos",cnt("Pendiente")],["ruta","🚚","Recorrido",0],["prod","🏷️","Precios y stock",0],["cli","👥","Clientes",0]].map(([k,i,l,n])=>`<button class="${adm==k?"on":""}" onclick="setAdm('${k}')"><span>${i}</span>${l}${n?`<em>${n}</em>`:""}</button>`).join("");
+ $("#adm").innerHTML=adm=="ped"?vPed():adm=="ruta"?vRuta():adm=="prod"?vProd():vCli()}
+const tel=o=>String(o.tel).replace(/[^\d+]/g,"");
+function oCard(o){
+ const i=ST.indexOf(o.status);
+ return `<article class="ocard"><div class="ohead"><div><b>${esc(o.local)}</b><div class="mu">Pedido #${o.id} · ${esc(o.town)} · ${o.list=="mayorista"?"Lista mayorista":"Consumidor final"}</div></div><b class="tot">${fm(o.total)}</b></div><ul>${o.items.map(x=>`<li><span class="qty">${x.q}</span> ${esc(pr(x.pid).name)}</li>`).join("")}</ul><div class="mu">📍 ${esc(o.addr)}<br>💬 Pago: ${esc(o.pay)}</div><div class="oact"><a class="lnk" href="tel:${tel(o)}">📞 Llamar</a>${i<2?`<button class="pri big" onclick="nextSt(${o.id})">${["✅ Ya lo armé","🚚 Ya lo entregué"][i]}</button>`:""}${i>0?`<button class="undo" onclick="prevSt(${o.id})">↩ Volver atrás</button>`:""}</div></article>`}
+function vPed(){
+ const l=orders.filter(o=>o.status==ofilter),hint={Pendiente:"Estos pedidos llegaron y todavía hay que prepararlos.",Armado:"Ya están preparados. Falta llevarlos.",Entregado:"Pedidos que ya se entregaron."}[ofilter];
+ return `<div class="pills">${ST.map(s=>`<button class="pill ${s==ofilter?"on":""}" onclick="ofilter='${s}';renderAdmin()">${LBL[s]} <b>${cnt(s)}</b></button>`).join("")}</div><p class="mu hint">${hint}</p>`+(l.length?`<div class="ocards">${l.map(oCard).join("")}</div>`:`<div class="empty">🎉 No hay pedidos en esta lista</div>`)}
+function vRuta(){
+ const open=o=>o.status!="Entregado";
+ let h=`<div class="step"><h3><span>1</span> ¿A qué pueblo vas?</h3><div class="twns">${TOWNS.map(t=>{const n=orders.filter(o=>o.town==t&&open(o)).length;return `<button class="twn ${t==town?"on":""}" onclick="town='${t}';renderAdmin()">${t}<em>${n} pedido${n==1?"":"s"}</em></button>`}).join("")}</div></div>`;
+ if(!town)return h+`<p class="mu hint">Tocá un pueblo para ver qué cargar y a quién entregar.</p>`;
+ const l=orders.filter(o=>o.town==town&&open(o)),load={};
+ l.forEach(o=>o.items.forEach(i=>load[i.pid]=(load[i.pid]||0)+i.q));
+ if(!l.length)return h+`<div class="empty">No hay pedidos pendientes para ${town}</div>`;
+ h+=`<div class="step"><h3><span>2</span> Cargá esto en la camioneta</h3>${Object.keys(load).map(id=>{const k=town+id,on=loaded[k];return `<label class="chk ${on?"done":""}"><input type="checkbox" ${on?"checked":""} onchange="loaded['${k}']=this.checked;renderAdmin()"><span class="qty">${load[id]}</span> ${tn(pr(id))} ${esc(pr(id).name)}</label>`}).join("")}<p class="mu">Tocá cada producto cuando ya lo subiste.</p></div>`;
+ h+=`<div class="step"><h3><span>3</span> Tus paradas (${l.length})</h3>${l.map((o,n)=>`<article class="ocard"><div class="ohead"><div><b>${n+1}. ${esc(o.local)}</b><div class="mu">📍 ${esc(o.addr)}</div></div><b class="tot">${fm(o.total)}</b></div><div class="mu">💬 Pago: ${esc(o.pay)}${o.status=="Pendiente"?` · <b style="color:var(--wa)">⚠ Falta armar</b>`:""}</div><div class="oact"><a class="lnk" href="tel:${tel(o)}">📞 Llamar</a><a class="lnk" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(o.addr+", "+o.town)}">🗺️ Ver en mapa</a><button class="pri big" onclick="deliver(${o.id})">✅ Entregado</button></div></article>`).join("")}<button class="lnk" onclick="print()">🖨️ Imprimir esta hoja</button></div>`;
+ return h}
+function vProd(){
+ return `<div class="step"><h3>Precios y stock</h3>${P.map(p=>`<div class="prow"><div class="pn">${tn(p)} <b>${esc(p.name)}</b><div class="mu">${esc(p.brand)}</div></div><div class="pp"><label class="mu">Final</label><span>$</span><input type="number" inputmode="numeric" min="0" value="${p.price}" onchange="setPrice(${p.id},'price',this.value)"></div><div class="pp"><label class="mu">Mayorista</label><span>$</span><input type="number" inputmode="numeric" min="0" value="${p.pm}" onchange="setPrice(${p.id},'pm',this.value)"></div><label class="lnk up">📷 ${p.img?"Cambiar foto":"Subir foto"}<input type="file" accept="image/*" hidden onchange="setImg(${p.id},this.files[0])"></label><button class="sw ${p.active?"on":""}" onclick="toggle(${p.id})">${p.active?"✔ Hay stock":"✖ Sin stock"}</button></div>`).join("")}</div><div class="step"><h3>➕ Agregar un producto</h3><form class="addf" onsubmit="addP(event)"><input name="name" required placeholder="Nombre (ej: Arroz 1kg)"><input name="brand" placeholder="Marca"><input name="price" type="number" min="0" required placeholder="Precio consumidor final"><button class="pri big">Agregar producto</button></form></div>`}
+function setSt(id,s,m){const o=orders.find(o=>o.id==id);o.status=s;renderAdmin();toast(m+" · "+o.local)}
+function nextSt(id){const o=orders.find(o=>o.id==id),s=ST[ST.indexOf(o.status)+1];setSt(id,s,s=="Armado"?"Listo: pasó a «Para entregar»":"Entregado ✓")}
+function prevSt(id){const o=orders.find(o=>o.id==id);setSt(id,ST[ST.indexOf(o.status)-1],"Volvió un paso atrás")}
+function deliver(id){setSt(id,"Entregado","Entregado ✓")}
+function setPrice(id,f,v){pr(id)[f]=Math.max(0,+v||0);orders.forEach(o=>o.total=oTotal(o));renderAdmin();renderGrid();renderCart();toast("Precio guardado ✓")}
+function toggle(id){const p=pr(id);p.active=!p.active;if(!p.active)delete cart[id];renderAdmin();renderGrid();renderCart();toast(p.active?"Producto disponible ✓":"Producto pausado")}
+function addP(e){e.preventDefault();const f=new FormData(e.target);P.push({id:Math.max(...P.map(p=>p.id))+1,name:f.get("name"),brand:f.get("brand")||"—",cat:"Almacén",emoji:"📦",price:+f.get("price"),pm:Math.round(+f.get("price")*.88/10)*10,active:true});renderAdmin();renderGrid();toast("Producto agregado ✓")}
+$("#town").innerHTML=`<option value="">Elegí tu localidad…</option>`+TOWNS.map(t=>`<option>${t}</option>`).join("");
+renderChips();renderGrid();renderCart();renderStrip();renderSide();
+</script></body></html>
